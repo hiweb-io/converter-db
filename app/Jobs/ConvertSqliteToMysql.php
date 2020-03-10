@@ -50,6 +50,7 @@ class ConvertSqliteToMysql implements ShouldQueue
                     $sql = str_replace('"', '', $table->sql);
                     $sql = str_replace('autoincrement', 'AUTO_INCREMENT', $sql);
                     $sql = str_replace('varchar', 'varchar(255)', $sql);
+                    $sql = str_replace('datetime', 'TIMESTAMP', $sql);
                     $sql = str_replace('CREATE TABLE', 'CREATE TABLE IF NOT EXISTS', $sql);
 
                     $tableOutput = $dbOutput->select($sql);
