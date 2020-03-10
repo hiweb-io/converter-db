@@ -52,7 +52,7 @@ class InsertData implements ShouldQueue
 
                 if (count($dbOutput->select("SELECT * FROM ".$this->tableName." where id='".$data->id."';")) == 0) {
                     // Update pr insert data
-                    $dbOutput->table($this->tableName)->insert((array)$data);
+                    $dbOutput->table($this->tableName)->updateOrInsert((array)$data);
                 }
 
             }
