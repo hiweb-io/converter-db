@@ -61,6 +61,21 @@
             .m-b-md {
                 margin-bottom: 30px;
             }
+
+            .alert {
+                color: white;
+                padding: 10px 20px;
+                margin: 10px 0;
+            }
+
+            .alert-error {
+                background: red;
+            }
+
+            .alert-success {
+                background: #00b500;
+            }
+
         </style>
     </head>
     <body>
@@ -72,10 +87,22 @@
                     Converter DB
                 </div>
 
+                @if($errors->any())
+                <div class="alert alert-error">
+                    {{session('errors')->first()}}
+                </div>
+                @endif
+
+                @if(session()->has('success'))
+                <div class="alert alert-success">
+                    {{ session()->get('success') }}
+                </div>
+                @endif
+
                 <form method="POST" action="{{ route('convert.sqlite.to.mysql') }}" enctype="multipart/form-data">
                     @csrf
 
-                    <button type="submit">Convert</button>
+                    <button class="convert-button" type="submit">Convert</button>
 
                 </form>
 

@@ -14,16 +14,11 @@ class ConvertController extends Controller
 
             ConvertSqliteToMysql::dispatch();
 
-            return response()->json([
-                'status' => 'success'
-            ], 200);
+            return redirect()->back()->with(['success' => 'Convert successfully']);
 
         } catch (\Exception $e) {
 
-            return response()->json([
-                'status' => 'failed',
-                'message' => $e->getMessage()
-            ], 400);
+            return redirect()->back()->withErrors(['msg' => $e->getMessage()]);
 
         }
 
