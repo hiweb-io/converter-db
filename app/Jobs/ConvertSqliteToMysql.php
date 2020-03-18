@@ -41,19 +41,19 @@ class ConvertSqliteToMysql implements ShouldQueue
 
             foreach ($tables as $table) {
 
-                if ($table->name !== 'sqlite_sequence') {
+                if ($table->name !== 'sqlite_sequence' and $table->name !== 'jobs' and $table->name !== 'failed_jobs' and $table->name !== 'password_resets') {
 
                     // connect db output
-                    $dbOutput = DB::connection('output');
+                    // $dbOutput = DB::connection('output');
 
-                    // create table if not exist
-                    $sql = str_replace('"', '', $table->sql);
-                    $sql = str_replace('autoincrement', 'AUTO_INCREMENT', $sql);
-                    $sql = str_replace('varchar', 'varchar(255)', $sql);
-                    $sql = str_replace('datetime', 'TIMESTAMP', $sql);
-                    $sql = str_replace('CREATE TABLE', 'CREATE TABLE IF NOT EXISTS', $sql);
+                    // // create table if not exist
+                    // $sql = str_replace('"', '', $table->sql);
+                    // $sql = str_replace('autoincrement', 'AUTO_INCREMENT', $sql);
+                    // $sql = str_replace('varchar', 'varchar(255)', $sql);
+                    // $sql = str_replace('datetime', 'TIMESTAMP', $sql);
+                    // $sql = str_replace('CREATE TABLE', 'CREATE TABLE IF NOT EXISTS', $sql);
 
-                    $tableOutput = $dbOutput->select($sql);
+                    // $tableOutput = $dbOutput->select($sql);
 
                     InsertData::dispatch($table->name, 0);
 

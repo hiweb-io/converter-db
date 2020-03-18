@@ -50,9 +50,56 @@ class InsertData implements ShouldQueue
 
             foreach ($inputData as $data) {
 
-                if (count($dbOutput->select("SELECT * FROM ".$this->tableName." where id='".$data->id."';")) == 0) {
-                    // Update pr insert data
-                    $dbOutput->table($this->tableName)->updateOrInsert((array)$data);
+                if ($this->tableName == "carts") {
+
+                    if ($data->quantity and (int)$data->quantity > 100000000) {
+                        $data->quantity = '0';
+                    }
+
+                    if ($data->subtotal and (int)$data->subtotal > 100000000) {
+                        $data->subtotal = 0;
+                    }
+
+                    if ($data->total and (int)$data->total > 100000000) {
+                        $data->total = 0;
+                    }
+
+                }
+
+                if ($this->tableName == "cart_items") {
+
+                    if ($data->unit_price and (int)$data->unit_price > 100000000) {
+                        $data->unit_price = 0;
+                    }
+
+                    if ($data->total and (int)$data->total > 100000000) {
+                        $data->total = 0;
+                    }
+
+                    if ($data->quantity and (int)$data->quantity > 100000000) {
+                        $data->quantity = '0';
+                    }
+
+                }
+
+                if ($this->tableName == "coupons") {
+
+                    if ((int)$data->usage_limit > 100000000) {
+
+                        $data->usage_limit = 100000000;
+                    }
+
+                }
+
+                if($this->tableName == "telescope_entries" or $this->tableName == "telescope_entries_tags" or $this->tableName == "telescope_monitoring") {
+
+                        // Insert data
+                        $dbOutput->table($this->tableName)->updateOrInsert((array)$data);
+
+                } else {
+                    if (count($dbOutput->select("SELECT * FROM ".$this->tableName." where id='".$data->id."';")) == 0) {
+                        $dbOutput->table($this->tableName)->insert((array)$data);
+                    }
                 }
 
             }
