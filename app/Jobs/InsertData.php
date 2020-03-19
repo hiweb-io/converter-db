@@ -98,7 +98,7 @@ class InsertData implements ShouldQueue
                         $dbOutput->table($this->tableName)->updateOrInsert((array)$data);
 
                 } else {
-                    $ínertData[] = (array)$data;
+                    $insertData[] = (array)$data;
                 }
 
             }
