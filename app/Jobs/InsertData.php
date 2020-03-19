@@ -117,6 +117,8 @@ class InsertData implements ShouldQueue
 
                 $dbOutput->table($this->tableName)->insert($insertData);
 
+                dump('Inserted '.$limit.' rows to table: '.$this->tableName.'. First ID: '.(@$ids[0]).', last ID: '.(@$ids[count($ids) - 1]));
+
             });
             
 
