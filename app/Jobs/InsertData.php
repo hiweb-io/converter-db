@@ -48,6 +48,7 @@ class InsertData implements ShouldQueue
             // connect db output
             $dbOutput = DB::connection('output');
 
+            $insertData = [];
             foreach ($inputData as $data) {
 
                 if ($this->tableName == "carts") {
@@ -97,12 +98,13 @@ class InsertData implements ShouldQueue
                         $dbOutput->table($this->tableName)->updateOrInsert((array)$data);
 
                 } else {
-                    if (count($dbOutput->select("SELECT * FROM ".$this->tableName." where id='".$data->id."';")) == 0) {
-                        $dbOutput->table($this->tableName)->insert((array)$data);
-                    }
+                    $ínertData[] = (array)$data;
                 }
 
             }
+
+            // Insert
+            $dbOutput->table($this->tableName)->insert($insertData);
 
             if (count($inputData) == $limit) {
                 InsertData::dispatch($this->tableName, $this->page+1);
