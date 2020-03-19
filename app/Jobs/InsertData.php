@@ -108,7 +108,7 @@ class InsertData implements ShouldQueue
 
             }
 
-            \DB::connection('output')->transaction(function() use ($ids, $dbOutput, $insertData) {
+            \DB::connection('output')->transaction(function() use ($ids, $dbOutput, $insertData, $limit) {
                 
                 // Insert
                 if ($ids and count($ids)) {
