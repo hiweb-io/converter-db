@@ -108,8 +108,16 @@ class InsertData implements ShouldQueue
 
             }
 
-            \DB::connection('output')->transaction(function() use ($ids, $dbOutput, $insertData, $limit) {
+            $dispatchNext = true;
+            \DB::connection('output')->transaction(function() use ($ids, $dbOutput, $insertData, $limit, &$dispatchNext) {
                 
+                // Try to count
+                if ($dbOutput->table($this->tableName)->whereIn('id', $ids)->count() === $limit) {
+                    dump('Duplicated - Not gonna dispatch next job');
+                    $dispatchNext = false;
+                    return;
+                }
+
                 // Insert
                 if ($ids and count($ids)) {
                     $dbOutput->table($this->tableName)->whereIn('id', $ids)->delete();
@@ -120,9 +128,8 @@ class InsertData implements ShouldQueue
                 dump('Inserted '.$limit.' rows to table: '.$this->tableName.'. First ID: '.(@$ids[0]).', last ID: '.(@$ids[count($ids) - 1]));
 
             });
-            
 
-            if (count($inputData) == $limit) {
+            if (count($inputData) == $limit and $dispatchNext) {
                 InsertData::dispatch($this->tableName, $this->page+1);
             }
 
