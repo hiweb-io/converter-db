@@ -84,6 +84,12 @@ class InsertData implements ShouldQueue
 
                 }
 
+                if ($this->tableName == "images") {
+                    if (strlen($data->path) > 255) {
+                        $data->path = substr($data->path,0 , strpos($data->path, "?"));
+                    }
+                }
+
                 if ($this->tableName == "coupons") {
 
                     if ((int)$data->usage_limit > 100000000) {
@@ -93,24 +99,51 @@ class InsertData implements ShouldQueue
 
                 }
 
-                if($this->tableName == "telescope_entries" or $this->tableName == "telescope_entries_tags" or $this->tableName == "telescope_monitoring") {
-
-                        // Insert data
-                        $dbOutput->table($this->tableName)->updateOrInsert((array)$data);
-
-                } else {
-                    $insertData[] = (array)$data;
-
-                    if (isset($data->id)) {
-                        $ids[] = $data->id;
+                if($this->tableName == 'variants') {
+                    if (strpos($data->compare_at_price, ',')) {
+                        $data->compare_at_price = str_replace(',', '.', $data->compare_at_price);
                     }
+                    if (strpos($data->price, ',')) {
+                        $data->price = str_replace(',', '.', $data->price);
+                    }
+                }
+
+                if ($this->tableName == "images") {
+                    if (!$data->hash) {
+                        $data->hash = sha1($data->path.'---'.$data->disk);
+                    }
+                }
+
+                if ($this->tableName == "transactions") {
+                    if (strpos($data->amount, '%2e')) {
+                        $data->amount = str_replace('%2e', '.', $data->amount);
+                    }
+                }
+
+
+                if($this->tableName == 'products') {
+                    if (strpos($data->min_price_compare_at, ',')) {
+                        $data->min_price_compare_at = str_replace(',', '.', $data->min_price_compare_at);
+                    }
+                    if (strpos($data->min_price, ',')) {
+                        $data->min_price = str_replace(',', '.', $data->min_price);
+                    }
+                    if (strlen($data->preview) > 255) {
+                        $data->preview = substr($data->preview,0 , 255);
+                    }
+                }
+
+                $insertData[] = (array)$data;
+
+                if (isset($data->id)) {
+                    $ids[] = $data->id;
                 }
 
             }
 
             $dispatchNext = true;
             \DB::connection('output')->transaction(function() use ($ids, $dbOutput, $insertData, $limit, &$dispatchNext) {
-                
+
                 // Try to count
                 if ($dbOutput->table($this->tableName)->whereIn('id', $ids)->count() === $limit) {
                     dump('Duplicated - Not gonna dispatch next job');
